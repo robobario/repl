@@ -5,6 +5,7 @@ import tornado.web
 from tornado.ioloop import IOLoop
 import re
 from repl import Repl
+import os.path
 repls = {}
 pattern  = re.compile(r"/(\d+)")
 
@@ -24,10 +25,13 @@ class MainHandler(tornado.web.RequestHandler):
     def data_received(self, chunk):
         num = int(pattern.match(self.request.path).group(1))
         repls[num].write_async(chunk)
+settings = {
+  "static_path": os.path.join(os.path.dirname(__file__), "static")
+}
 
 application = tornado.web.Application([
     (r"/(\d+)", MainHandler),
-])
+], **settings)
 
 if __name__ == "__main__":
     application.listen(8888)
