@@ -7,7 +7,7 @@ mkvirtualenv --no-site-packages --distribute --python=/usr/lib/pypy/bin/pypy-c r
 workon repl
 pip install tornado
 command -v docker >/dev/null 2>&1 || wget -qO- https://get.docker.com/ | sh
+sudo usermod -aG docker $USER
 git clone https://github.com/robobario/repl.git
 cd repl
 sudo python docker.py
-nohup sudo python server.py &
