@@ -1,8 +1,7 @@
-apt-get update
-apt-get install git
-apt-get install wget
+sudo apt-get update
+sudo apt-get install git wget
 wget -qO- https://get.docker.com/ | sh
 git clone https://github.com/robobario/repl.git
 cd repl
-python docker.py
-nohup python server.py &
+sudo python docker.py
+nohup sudo python server.py &
