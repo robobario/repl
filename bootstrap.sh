@@ -3,6 +3,7 @@ sudo apt-get update
 sudo apt-get -y install git wget pypy python-pip build-essential python-dev
 sudo pip install virtualenv
 sudo pip install virtualenvwrapper
+source /usr/local/bin/virtualenvwrapper.sh
 mkvirtualenv --no-site-packages --distribute --python=/usr/lib/pypy/bin/pypy-c repl
 workon repl
 pip install tornado
