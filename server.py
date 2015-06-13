@@ -7,22 +7,23 @@ import re
 from repl import Repl
 repls = {}
 pattern  = re.compile(r"/(\d+)")
+
 @tornado.web.stream_request_body
 class MainHandler(tornado.web.RequestHandler):
     def get(self, path):
         if self.get_argument("close", default=None) is not None:
           ioloop.stop()
-        self.num = int(path)
-        if self.num not in repls:
-           repls[self.num] = Repl(ioloop, "python")
-        repls[self.num].drain_to_handler(self)     
+        num = int(path)
+        if num not in repls:
+           repls[num] = Repl(ioloop, "python")
+        repls[num].drain_to_handler(self)     
    
     def post(self, path):
         self.write("")
 
     def data_received(self, chunk):
-        self.num = int(pattern.match(self.request.path).group(1))
-        repls[self.num].write_async(chunk)
+        num = int(pattern.match(self.request.path).group(1))
+        repls[num].write_async(chunk)
 
 application = tornado.web.Application([
     (r"/(\d+)", MainHandler),
