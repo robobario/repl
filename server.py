@@ -6,30 +6,41 @@ from tornado.ioloop import IOLoop
 import re
 from repl import Repl
 import os.path
+
 repls = {}
-pattern  = re.compile(r"/(\d+)")
+pattern = re.compile(r"/(\d+)")
+
 
 @tornado.web.stream_request_body
 class MainHandler(tornado.web.RequestHandler):
     def get(self, path):
         if self.get_argument("close", default=None) is not None:
-          ioloop.stop()
+            ioloop.stop()
         num = int(path)
         if num not in repls:
-           repls[num] = Repl(ioloop, "python")
-        repls[num].drain_to_handler(self)     
-   
+            repls[num] = Repl(ioloop, "python")
+        repls[num].drain_to_handler(self)
+
     def post(self, path):
         self.write("")
 
     def data_received(self, chunk):
         num = int(pattern.match(self.request.path).group(1))
         repls[num].write_async(chunk)
+
+
 settings = {
-  "static_path": os.path.join(os.path.dirname(__file__), "static")
+    "static_path": os.path.join(os.path.dirname(__file__), "static")
 }
 
+
+class RootHandler(tornado.web.RequestHandler):
+    def get(self):
+        self.render("static/index.html")
+
+
 application = tornado.web.Application([
+    (r"/", RootHandler),
     (r"/(\d+)", MainHandler),
 ], **settings)
 
