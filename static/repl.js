@@ -1,9 +1,11 @@
+interp = 0
+
 var updater = {
     errorSleepTime: 500,
 
     poll: function () {
         $.ajax({
-            url: "/1", type: "GET", dataType: "text",
+            url: "/" + interp, type: "GET", dataType: "text",
             success: updater.onSuccess,
             error: updater.onError
         });
@@ -33,12 +35,21 @@ var updater = {
     }
 
 };
-updater.poll()
 $(function () {
+    $("#type").change(function(){
+       var type = $("#type").val();
+       $.ajax({
+            url: "/new/" + type, type: "GET", dataType: "text",
+            success: function(data){
+              interp = JSON.parse(data);
+              updater.poll();
+           }
+       });
+    })
     $("#input").keypress(function (event) {
         if (event.which == 13) {
             event.preventDefault();
-            $.post("/1", $("#input").val() + "\n")
+            $.post("/" + interp, $("#input").val() + "\n")
         }
     })
 })

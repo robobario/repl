@@ -7,9 +7,16 @@ import re
 from repl import Repl
 import os.path
 import time
+import json 
 
 repls = {}
 pattern = re.compile(r"/(\d+)")
+
+def create_repl(ioloop,repl_type):
+  global repls
+  repl = Repl(ioloop, repl_type)
+  repls[repl.identity] = repl
+  return repl.identity
 
 def clean_idle_repls():
   global repls
@@ -23,6 +30,11 @@ def clean_idle_repls():
   ioloop = tornado.ioloop.IOLoop.current()
   ioloop.call_later(2, clean_idle_repls)
 
+class NewReplHandler(tornado.web.RequestHandler):
+    def get(self, repl_type):
+        repl_id = create_repl(ioloop, repl_type)
+        self.write(json.dumps(repl_id))
+
 @tornado.web.stream_request_body
 class MainHandler(tornado.web.RequestHandler):
     def get(self, path):
@@ -30,16 +42,19 @@ class MainHandler(tornado.web.RequestHandler):
             ioloop.stop()
         num = int(path)
         if num not in repls:
-            repls[num] = Repl(ioloop, "python")
-        repls[num].drain_to_handler(self)
+            self.set_status(404)
+        else:
+            repls[num].drain_to_handler(self)
 
     def post(self, path):
         self.write("")
 
     def data_received(self, chunk):
         num = int(pattern.match(self.request.path).group(1))
-        repls[num].write_async(chunk)
-
+        if num not in repls:
+            self.set_status(404)
+        else:
+            repls[num].write_async(chunk)
 
 settings = {
     "static_path": os.path.join(os.path.dirname(__file__), "static")
@@ -54,6 +69,7 @@ class RootHandler(tornado.web.RequestHandler):
 application = tornado.web.Application([
     (r"/", RootHandler),
     (r"/(\d+)", MainHandler),
+    (r"/new/([a-zA-Z0-9\-]+)", NewReplHandler),
 ], **settings)
 
 if __name__ == "__main__":
