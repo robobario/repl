@@ -6,10 +6,22 @@ from tornado.ioloop import IOLoop
 import re
 from repl import Repl
 import os.path
+import time
 
 repls = {}
 pattern = re.compile(r"/(\d+)")
 
+def clean_idle_repls():
+  global repls
+  to_del = []
+  for key, repl in repls.iteritems():
+    if repl.is_expired(): 
+       to_del.append(key)
+       repl.close()
+  for key in to_del:
+    del repls[key]
+  ioloop = tornado.ioloop.IOLoop.current()
+  ioloop.call_later(2, clean_idle_repls)
 
 @tornado.web.stream_request_body
 class MainHandler(tornado.web.RequestHandler):
@@ -47,4 +59,5 @@ application = tornado.web.Application([
 if __name__ == "__main__":
     application.listen(8888)
     ioloop = tornado.ioloop.IOLoop.current()
+    ioloop.call_later(5, clean_idle_repls)
     ioloop.start()
