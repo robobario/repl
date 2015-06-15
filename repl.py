@@ -15,7 +15,7 @@ def next_id():
 
 
 def start(docker_tag):
-    command = ["script", "-c" "docker run -t -i " + docker_tag, "/dev/null"]
+    command = ["script", "-c" "docker run --net=none --read-only=true -t -i " + docker_tag, "/dev/null"]
     return tornado.process.Subprocess(command, preexec_fn=os.setsid, stdin=STREAM,
                                       stdout=STREAM, stderr=STREAM)
 
