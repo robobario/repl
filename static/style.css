@@ -84,14 +84,17 @@ table {
 }
 #controls {
   position:absolute;
-    height:1.66em;
+    height:2.34em;
     bottom:0px;
     left:0px;
     right:0px;
     margin-bottom:0px;
+    padding-left:1em;
+    padding-right:1em;
 }
 #output {
   position: absolute;
   bottom:0px;
-  margin-bottom: 1.66em;
+  padding:1em;
+  margin-bottom: 2.34em;
 }
