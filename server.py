@@ -11,6 +11,7 @@ import json
 
 repls = {}
 pattern = re.compile(r"/(\d+)")
+safe_repls = ["prolog","scala","python","haskell","ruby","clojure","erlang","kotlin","nodejs"]
 
 def create_repl(ioloop,repl_type):
   global repls
@@ -20,20 +21,27 @@ def create_repl(ioloop,repl_type):
 
 def clean_idle_repls():
   global repls
-  to_del = []
-  for key, repl in repls.iteritems():
-    if repl.is_expired(): 
-       to_del.append(key)
-       repl.close()
-  for key in to_del:
-    del repls[key]
-  ioloop = tornado.ioloop.IOLoop.current()
-  ioloop.call_later(2, clean_idle_repls)
+  try:
+    to_del = []
+    for key, repl in repls.iteritems():
+      if repl.is_expired(): 
+        to_del.append(key)
+        repl.close()
+    for key in to_del:
+      del repls[key]
+    ioloop = tornado.ioloop.IOLoop.current()
+  finally:
+    ioloop.call_later(2, clean_idle_repls)
 
 class NewReplHandler(tornado.web.RequestHandler):
     def get(self, repl_type):
-        repl_id = create_repl(ioloop, repl_type)
-        self.write(json.dumps(repl_id))
+        if repl_type in safe_repls:
+            repl_id = create_repl(ioloop, repl_type)
+            self.write(json.dumps(repl_id))
+        else:
+            self.clear()
+            self.set_status(404)
+            self.finish("<html><body>non existant repl type</body></html>")
 
 @tornado.web.stream_request_body
 class MainHandler(tornado.web.RequestHandler):
