@@ -1,4 +1,4 @@
-FROM ubuntu
-RUN apt-get update && apt-get install -y curl && apt-get clean && curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash - && sudo apt-get install -y nodejs
+FROM nodesource/node:wheezy
+ENV NODE_NO_READLINE=1
 CMD ["node"]
 
