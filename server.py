@@ -33,6 +33,18 @@ def clean_idle_repls():
   finally:
     ioloop.call_later(2, clean_idle_repls)
 
+class KillReplHandler(tornado.web.RequestHandler):
+    def get(self, path):
+        num = int(path)
+        if num in repls:
+            repls[num].close()
+            del repls[num]
+            self.set_status(200)
+            self.finish() 
+        else:
+            self.clear()
+            self.set_status(404)
+            self.finish("<html><body>non existant repl type</body></html>")
 class NewReplHandler(tornado.web.RequestHandler):
     def get(self, repl_type):
         if repl_type in safe_repls:
@@ -46,8 +58,6 @@ class NewReplHandler(tornado.web.RequestHandler):
 @tornado.web.stream_request_body
 class MainHandler(tornado.web.RequestHandler):
     def get(self, path):
-        if self.get_argument("close", default=None) is not None:
-            ioloop.stop()
         num = int(path)
         if num not in repls:
             self.set_status(404)
@@ -76,6 +86,7 @@ class RootHandler(tornado.web.RequestHandler):
 
 application = tornado.web.Application([
     (r"/", RootHandler),
+    (r"/kill/(\d+)", KillReplHandler),
     (r"/(\d+)", MainHandler),
     (r"/new/([a-zA-Z0-9\-]+)", NewReplHandler),
 ], **settings)

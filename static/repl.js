@@ -39,6 +39,9 @@ var updater = {
 };
 $(function () {
     $("#type").change(function(){
+       if(interp !== 0){
+            $.get("/kill/" + interp)
+       }
        var type = $("#type").val();
        $.ajax({
             url: "/new/" + type, type: "GET", dataType: "text",
