@@ -79,6 +79,8 @@ table {
 
 *, body {
   font-family: 'source_code_proregular';
+  background-color: #FFFCCC;
+  color : #875300;
 }
 #controls {
   position:absolute;
