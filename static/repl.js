@@ -55,6 +55,7 @@ $(function () {
         if (event.which == 13) {
             event.preventDefault();
             $.post("/" + interp, $("#input").val() + "\n")
+            $("#input").val("")
         }
     })
 })
