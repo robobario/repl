@@ -16,9 +16,11 @@ var updater = {
             var str = JSON.parse(response);
             var strs = str.split("\n");
             for (var i = 0; i < strs.length; i++) {
-                var p = $("<p>");
-                p.text(strs[i])
-                $("#output").append(p);
+                  if (strs[i] !== ""){
+                  var p = $("<p>");
+                  p.text(strs[i])
+                  $("#output").append(p);
+                }
             }
         } catch (e) {
             updater.onError();

@@ -4,9 +4,14 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>Repl</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ static_url("style.css") }}">
   </head>
   <body>
-       <select id="type">
+    <div id="output"></div>
+    <div id="controls">
+    <form>
+       <input type="text" id="input"/>
+         <select id="type">
           <option disabled selected> -- select an option -- </option>
           <option name="python">python</option>
           <option name="clojure">clojure</option>
@@ -17,11 +22,9 @@
           <option name="nodejs">nodejs</option>
           <option name="erlang">erlang</option>
           <option name="prolog">prolog</option>
-       </select>
-    <div id="output"></div>
-    <form>
-       <input type="text" id="input"/>
-    </form>
+        </select>
+      </form>
+    </div>
     <script src="{{ static_url("repl.js") }}" type="text/javascript"></script>
   </body>
 </html>
