@@ -8,6 +8,7 @@ from repl import Repl
 import os.path
 import time
 import json 
+import subprocess
 
 repls = {}
 pattern = re.compile(r"/(\d+)")

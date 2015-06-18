@@ -3,6 +3,7 @@ import tornado.process
 import json
 import os
 import signal
+import subprocess 
 
 STREAM = tornado.process.Subprocess.STREAM
 global_id = 0
@@ -14,9 +15,9 @@ def next_id():
     return global_id
 
 
-def start(docker_tag):
-    command = ["script", "-c" "docker run --net=none --read-only=true -t -i " + docker_tag, "/dev/null"]
-    return tornado.process.Subprocess(command, preexec_fn=os.setsid, stdin=STREAM,
+def start(docker_tag, name):
+    command = ["./withpty.py", "docker", "run","--rm=true", "--net=none", "--read-only=true", "-t", "--name", name,"-i", docker_tag]
+    return tornado.process.Subprocess(command, preexec_fn=os.setpgrp, stdin=STREAM,
                                       stdout=STREAM, stderr=STREAM)
 
 
@@ -27,7 +28,8 @@ class Repl:
         self.ioloop = ioloop
         self.buff = bytearray(self.buffsize)
         self.offset = 0
-        self.interpreter = start(docker_tag)
+        self.name = docker_tag + str(self.identity)
+        self.interpreter = start(docker_tag, self.name)
         self.ioloop.add_callback(self.start_fill)
         self.update_drain_time()
         self.alive = True
@@ -51,6 +53,7 @@ class Repl:
 
     def close(self):
         os.killpg(os.getpgid(self.interpreter.pid), signal.SIGKILL)
+        subprocess.call(["docker","kill",self.name])
         self.alive = False
         del self.interpreter
 
