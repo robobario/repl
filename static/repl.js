@@ -20,6 +20,8 @@ var updater = {
                   var p = $("<p>");
                   p.text(strs[i])
                   $("#output").append(p);
+                  var container = $("#container");
+                  container.scrollTop(container[0].scrollHeight)
                 }
             }
         } catch (e) {
@@ -51,11 +53,12 @@ $(function () {
            }
        });
     })
-    $("#input").keypress(function (event) {
+    var input = $("#input")
+    input.keypress(function (event) {
         if (event.which == 13) {
             event.preventDefault();
-            $.post("/" + interp, $("#input").val() + "\n")
-            $("#input").val("")
+            $.post("/" + interp, input.val() + "\n");
+            input.val("")
         }
     })
 })

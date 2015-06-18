@@ -92,9 +92,11 @@ table {
     padding-left:1em;
     padding-right:1em;
 }
-#output {
+#container {
   position: absolute;
   bottom:0px;
   padding:1em;
   margin-bottom: 2.34em;
+  overflow: auto;
+  max-height: 100%;
 }
